@@ -1,0 +1,20 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>COC角色卡建立</title>
+</head>
+<body>
+    <h1>建立角色卡</h1>
+    <form method="POST" action="/create">
+        <label>名稱: <input type="text" name="name" required></label><br>
+        <label>職業: <input type="text" name="occupation" required></label><br>
+        <label>外貌: <input type="text" name="app" required></label><br>
+        <label>力量: <input type="number" name="str" required></label><br>
+        <label>敏捷: <input type="number" name="dex" required></label><br>
+        <label>理智: <input type="number" name="san" required></label><br>
+        <button type="submit">儲存</button>
+    </form>
+    <a href="/characters">查看所有角色</a>
+</body>
+</html>
