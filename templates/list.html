@@ -8,7 +8,10 @@
     <h1>已建立角色卡</h1>
     <ul>
         {% for c in characters %}
-        <li>{{ c[1] }}（職業：{{ c[2] }}／外貌：{{ c[3] }}／力量：{{ c[4] }}／敏捷：{{ c[5] }}／理智：{{ c[6] }}）</li>
+        <li>
+            {{ c[1] }}（職業：{{ c[2] }}／外貌：{{ c[3] }}／力量：{{ c[4] }}／敏捷：{{ c[5] }}／理智：{{ c[6] }}）
+            {% if c[7] %}<br><img src="/uploads/{{ c[7] }}" alt="角色圖片" style="max-width:120px;max-height:120px;">{% endif %}
+        </li>
         {% endfor %}
     </ul>
     <a href="/">回到建立角色</a>
