@@ -98,17 +98,18 @@ def simple_404_app(environ, start_response):
     start_response('404 Not Found', [('Content-Type', 'text/plain')])
     return [b'Not Found']
 
+application = DispatcherMiddleware(
+    simple_404_app,
+    {
+        '/coc-web': app
+    }
+)
+
 if __name__ == "__main__":
     init_db()
     # 根據作業系統判斷
     if platform.system() == "Linux":
         # Linux 伺服器，掛載到 /coc-web
-        application = DispatcherMiddleware(
-            simple_404_app,
-            {
-                '/coc-web': app
-            }
-        )
         run_simple('0.0.0.0', 8000, application, use_reloader=True, use_debugger=True)
     else:
         # Windows 或其他本地環境，直接啟動 Flask
