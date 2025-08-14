@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, redirect, send_from_directory
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from werkzeug.serving import run_simple
+import platform
 
 app = Flask(__name__)
 DATABASE = 'characters.db'
@@ -91,6 +94,22 @@ def clear_characters():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+def simple_404_app(environ, start_response):
+    start_response('404 Not Found', [('Content-Type', 'text/plain')])
+    return [b'Not Found']
+
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    # 根據作業系統判斷
+    if platform.system() == "Linux":
+        # Linux 伺服器，掛載到 /coc-web
+        application = DispatcherMiddleware(
+            simple_404_app,
+            {
+                '/coc-web': app
+            }
+        )
+        run_simple('0.0.0.0', 8000, application, use_reloader=True, use_debugger=True)
+    else:
+        # Windows 或其他本地環境，直接啟動 Flask
+        app.run(host="0.0.0.0", port=8000, debug=True)

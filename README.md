@@ -1,4 +1,3 @@
-
 # COC 角色卡儲存網站
 
 這是一個使用 Python + Flask 製作的 Call of Cthulhu（COC）TRPG 角色卡儲存系統，支援建立角色、儲存到 SQLite 資料庫、瀏覽所有角色。
@@ -84,3 +83,82 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 ```
+
+---
+
+## 部署到 Linux 伺服器（以 Linode Debian 為例）
+
+1. **安裝必要套件**
+   ```sh
+   sudo apt update
+   sudo apt install python3 python3-pip python3-venv nginx git
+   ```
+
+2. **取得原始碼**
+   ```sh
+   git clone <你的 GitHub 專案網址>
+   cd coc-cs-web
+   ```
+
+3. **建立虛擬環境並安裝依賴**
+   ```sh
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+4. **測試 Flask 應用**
+   ```sh
+   python app.py
+   ```
+   確認能正常啟動（預設 http://localhost:5000）。
+
+5. **使用 Gunicorn 部署 Flask**
+   ```sh
+   pip install gunicorn
+   gunicorn -w 4 app:app
+   ```
+   Gunicorn 預設監聽 8000 port，可依需求調整。
+
+6. **Nginx 設定（共存 PHP 與 Flask）**
+   - PHP 網頁維持原本設定（如 `/`）。
+   - Flask 服務掛載於 `/coc-web` 路徑：
+
+     ```
+     location /coc-web/ {
+         proxy_pass http://127.0.0.1:8000/;
+         proxy_set_header Host $host;
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_set_header X-Forwarded-Proto $scheme;
+         # proxy_set_header SCRIPT_NAME /coc-web; # 可註解，除非 Flask 需支援 SCRIPT_NAME
+     }
+     location /coc-web/static/ {
+         alias /root/coc-cs-web/static/;
+     }
+     ```
+
+   - 若遇 `Bad Request: Request path '/' does not start with SCRIPT_NAME '/coc-web'`，可將 `proxy_set_header SCRIPT_NAME /coc-web;` 註解掉，或於 Flask 端使用 DispatcherMiddleware 處理前綴。
+
+7. **檢查 Nginx 設定語法並重啟**
+   ```sh
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+8. **檢查 static/uploads 權限**
+   ```sh
+   mkdir -p static/uploads
+   chmod 755 static/uploads
+   ```
+
+9. **.gitignore 設定**
+   - `.db` 檔案與 `static/uploads/` 目錄不建議加入版本控管，請參考 `.gitignore` 範例。
+
+10. **存取服務**
+    - PHP 網頁：`http://your_domain/`
+    - Flask 服務：`http://your_domain/coc-web/`
+
+---
+
+如遇特殊路徑或 SCRIPT_NAME 問題，請依實際需求調整 Nginx 及 Flask 設定。
