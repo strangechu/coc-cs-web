@@ -10,10 +10,21 @@
         {% for c in characters %}
         <li>
             {{ c[1] }}（職業：{{ c[2] }}／外貌：{{ c[3] }}／力量：{{ c[4] }}／敏捷：{{ c[5] }}／理智：{{ c[6] }}）
-            {% if c[7] %}<br><img src="/uploads/{{ c[7] }}" alt="角色圖片" style="max-width:120px;max-height:120px;">{% endif %}
+            {% if c[7] %}<br><img id="charimg{{ loop.index }}" src="" alt="角色圖片" style="max-width:120px;max-height:120px;">{% endif %}
         </li>
         {% endfor %}
     </ul>
-    <a href="/">回到建立角色</a>
+    <a id="backlink" href="/coc-web/">回到建立角色</a>
+    <script>
+    function getPrefix() {
+        return (window.location.pathname.startsWith('/coc-web')) ? '/coc-web' : '';
+    }
+    {% for c in characters %}
+    {% if c[7] %}
+    document.getElementById('charimg{{ loop.index }}').src = getPrefix() + '/uploads/{{ c[7] }}';
+    {% endif %}
+    {% endfor %}
+    document.getElementById('backlink').href = getPrefix() + '/';
+    </script>
 </body>
 </html>

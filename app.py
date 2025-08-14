@@ -60,8 +60,10 @@ def create():
               (name, occupation, app_, str_, dex, san, image_filename))
     conn.commit()
     conn.close()
-
-    return redirect("/characters")
+    if platform.system() == "Linux":
+        return redirect("/coc-web/characters")
+    else:
+        return redirect("/characters")
 
 # 角色列表
 @app.route("/characters")
@@ -88,7 +90,10 @@ def clear_characters():
             file_path = os.path.join(upload_folder, filename)
             if os.path.isfile(file_path):
                 os.remove(file_path)
-    return redirect("/")
+    if platform.system() == "Linux":
+        return redirect("/coc-web/")
+    else:
+        return redirect("/")
 
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
@@ -107,7 +112,6 @@ application = DispatcherMiddleware(
 
 if __name__ == "__main__":
     init_db()
-    # 根據作業系統判斷
     if platform.system() == "Linux":
         # Linux 伺服器，掛載到 /coc-web
         run_simple('0.0.0.0', 8000, application, use_reloader=True, use_debugger=True)

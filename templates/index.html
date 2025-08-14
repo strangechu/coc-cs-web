@@ -12,11 +12,15 @@
         document.getElementsByName('dex')[0].value = Math.floor(Math.random() * 100);
         document.getElementsByName('san')[0].value = Math.floor(Math.random() * 100);
     }
+    function getPrefix() {
+        // 根據平台自動判斷前綴
+        return (window.location.pathname.startsWith('/coc-web')) ? '/coc-web' : '';
+    }
     </script>
 </head>
 <body>
     <h1>建立角色卡</h1>
-    <form method="POST" action="/create" enctype="multipart/form-data">
+    <form method="POST" id="createForm" enctype="multipart/form-data">
         <label>名稱: <input type="text" name="name" required></label><br>
         <label>職業: <input type="text" name="occupation" required></label><br>
         <label>外貌: <input type="text" name="app" required></label><br>
@@ -27,9 +31,14 @@
         <button type="submit">儲存</button>
         <button type="button" onclick="randomCharacter()" style="margin-left:10px;background-color:#3498db;color:white;">快速隨機創建</button>
     </form>
-    <form method="POST" action="/clear" style="margin-top:20px;">
+    <form method="POST" id="clearForm" style="margin-top:20px;">
         <button type="submit" style="background-color:#e74c3c;color:white;">清除所有角色資料</button>
     </form>
-    <a href="/characters">查看所有角色</a>
+    <a id="viewAll" href="#">查看所有角色</a>
+    <script>
+    document.getElementById('createForm').action = getPrefix() + '/create';
+    document.getElementById('clearForm').action = getPrefix() + '/clear';
+    document.getElementById('viewAll').href = getPrefix() + '/characters';
+    </script>
 </body>
 </html>
